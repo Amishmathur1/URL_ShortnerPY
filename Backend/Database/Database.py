@@ -58,6 +58,27 @@ def add_short_code (val, base_id):
     except (Exception, psycopg2.DatabaseError) as e:
         print(e)
 
+def check_code (code):
+    sql = '''
+            SELECT user_URL 
+            FROM url_handler
+            WHERE short_code = (%s)
+        '''
+
+    try:
+        with get_connection() as conn:
+            with conn.cursor() as curr:
+                curr.execute(sql, (code, ))
+                row = curr.fetchone()
+                if row:
+                    return row
+
+                conn.commit()
+    except (Exception, psycopg2.DatabaseError) as e:
+        print(e)
+    
+
+        
 # conn = get_connection()
 # cur = conn.cursor()
 # cur.execute(command)
