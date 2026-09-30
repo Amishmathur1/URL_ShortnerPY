@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>URL Shortener</h1>
+
+        <form id="url-form">
+            <input
+                type="url"
+                id="url"
+                name="url"
+                placeholder="Enter your URL"
+                required
+            >
+
+            <button type="submit">Shorten URL</button>
+        </form>
+
+        <div class="result">
+            <p>Your shortened URL:</p>
+            <a href="#" id="short-url">Short URL will appear here</a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

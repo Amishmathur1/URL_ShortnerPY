@@ -4,8 +4,18 @@ from Database.Database import add_url, add_short_code, check_code
 from shorten_url import shortening_logic
 from fastapi.responses import RedirectResponse
 import re
+from fastapi.middleware.cors import CORSMiddleware
+
 
 app = FastAPI(redirect_slashes=False)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://0.0.0.0:5500"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class WebModel (BaseModel):
     homepage : HttpUrl
@@ -26,8 +36,7 @@ def get_url(url: WebModel):
 
         new_url = 'http://127.0.0.1:8000/' + short_code
         return {
-            'Message' : f'new_code {short_code}',
-            'New_URL' : new_url
+            'new_url' : new_url
         }
 
     except ValidationError as e:
