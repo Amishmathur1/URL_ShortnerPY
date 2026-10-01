@@ -34,7 +34,7 @@ def get_url(url: WebModel):
         short_code = shortening_logic(base_id)
         add_short_code (short_code, base_id)
 
-        new_url = 'http://127.0.0.1:8000/' + short_code
+        new_url = 'https://url-shortnerpy.onrender.com/' + short_code
         return {
             'new_url' : new_url
         }
