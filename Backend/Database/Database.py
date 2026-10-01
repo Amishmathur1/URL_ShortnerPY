@@ -1,16 +1,13 @@
+import os
 import psycopg2
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def get_connection():
-    try:
-        return psycopg2.connect(
-            database="postgres",
-            user="postgres",
-            password="root",
-            host="127.0.0.1",
-            port=5432,
-        )
-    except Exception as e:
-        return e
+    return psycopg2.connect(
+        os.getenv("DATABASE_URL")
+    )
 #
 # command = '''
 #             CREATE TABLE url_handler (
@@ -60,7 +57,7 @@ def add_short_code (val, base_id):
 
 def check_code (code):
     sql = '''
-            SELECT user_URL 
+            SELECT user_URL
             FROM url_handler
             WHERE short_code = (%s)
         '''
@@ -76,9 +73,9 @@ def check_code (code):
                 conn.commit()
     except (Exception, psycopg2.DatabaseError) as e:
         print(e)
-    
 
-        
+
+
 # conn = get_connection()
 # cur = conn.cursor()
 # cur.execute(command)

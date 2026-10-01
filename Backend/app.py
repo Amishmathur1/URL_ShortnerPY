@@ -11,7 +11,7 @@ app = FastAPI(redirect_slashes=False)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://0.0.0.0:5500"],
+    allow_origins=["http://0.0.0.0:5500", "https://urlshortnerfront.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
