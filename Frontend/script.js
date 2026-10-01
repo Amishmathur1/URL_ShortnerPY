@@ -1,26 +1,3 @@
-// const response = await fetch("https://127.0.0.1:8000/shorten", {
-//     method: "POST",
-//     headers: {
-//         "content-type": "application/json"
-//     },
-//     body: JSON.stringify({
-//         url: document.getElementById("url").value
-//     })
-// });
-//
-// const data = await response.json();
-//
-// const shortUrl = document.getElementById("short-url");
-//
-// shortUrl.innerText = data.new_url;
-// shortUrl.href = data.new_url;
-//
-// const form = document.getElementById("url-form");
-//
-// form.addEventListener("submit", async (event) => {
-// event.preventDefault();
-
-
 const form = document.getElementById("url-form");
 
 form.addEventListener("submit", async (event) => {

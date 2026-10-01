@@ -14,6 +14,3 @@ def shortening_logic (id):
         id = id // 62
 
     return short_code[::-1]
-
-
-# shortening_logic(1)

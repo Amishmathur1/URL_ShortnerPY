@@ -1,40 +1,460 @@
 # URL_ShortnerPY
 
-Building a URL Shortner in Python
-Requirements:- 
-    - A simple UI Page which has a text input field and a submit button 
-    - An output field which displays the shortened URL
+A full-stack URL shortener built with **Python, FastAPI, PostgreSQL, HTML, CSS, and JavaScript**.
 
-Functional Requirements:-
-    - Accept the URL input from the user - DONE
-    - Generate a unique shortened URL from the original URL - DONE
-    - Store the shortened URL in a database - DONE
-    - Provide the shortened URL to the user
-    - Redirect the user to the original URL when they click on the shortened URL
-    - Return an Error if the shortened URL is not found in the database
-    - Provide the user to delete the shortened URL from the database
+The application accepts a long URL, generates a unique Base62-based short code, stores the mapping in PostgreSQL, and redirects users to the original URL through the generated short link.
 
-Non-Functional Requirements:-
-    - The URL generated should be unique and should not conflict with the existing URL's in the database
-    - Appropriate HTTP status should be returned for each request
-    - URL's must be validated first before shortening
-    - Database operations should be seperate form the shortning logic
+## 🚀 Live Application
 
-Database Table Schema:-
-    A Single Table with the following columns:-
-        - id: Primary Key
-        - original_url: The original URL
-        - short_code: The shortened URL
-        - created_at: Timestamp of when the URL was shortened
+**Frontend:** https://urlshortnerfront.vercel.app/
 
-Defining The Endpoints:-
-    - POST /shorten: Accepts the original URL and returns the shortened URL
-    - GET /<short_url>: Redirects the user to the original URL
-    - DELETE /<short_url>: Deletes the shortened URL from the database
+**Backend API:** https://url-shortnerpy.onrender.com/
 
-Files Needed:-
-    - app.py - The main application file with the FastAPI app definition
-    - database.py - The Database connection and setting up the table scheme using PostGre SQL for this includes the funtions of models.py also
-    - short_url.py - The main logic for shrotening the URL and storing it into the database
-    - Frontend Section with a basic template created using HTML and CSS
-    - requirements.txt - The list of dependencies required to run the application
+**API Documentation:** https://url-shortnerpy.onrender.com/docs
+
+---
+
+## 📌 Features
+
+* Accepts and validates URLs before shortening
+* Generates unique short codes using Base62 encoding
+* Stores URLs and short codes in PostgreSQL
+* Returns a shortened URL to the user
+* Redirects users from the short URL to the original URL
+* Returns an appropriate error when a short code does not exist
+* Separates database operations from URL-shortening logic
+* REST API built using FastAPI
+* Frontend deployed separately from the backend
+* PostgreSQL database hosted on Render
+* Backend hosted on Render
+* Frontend hosted on Vercel
+
+---
+
+## 🛠️ Tech Stack
+
+### Backend
+
+* **Python**
+* **FastAPI**
+* **Uvicorn**
+* **Pydantic**
+* **psycopg2**
+
+### Database
+
+* **PostgreSQL**
+
+### Frontend
+
+* **HTML**
+* **CSS**
+* **JavaScript**
+
+### Deployment
+
+* **Vercel** — Frontend
+* **Render** — FastAPI Backend
+* **Render PostgreSQL** — Database
+
+---
+
+## 🏗️ Architecture
+
+```text
+                    ┌──────────────────────┐
+                    │       Vercel         │
+                    │   HTML/CSS/JS        │
+                    │      Frontend        │
+                    └──────────┬───────────┘
+                               │
+                         HTTP Requests
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │       Render         │
+                    │      FastAPI         │
+                    │       Backend        │
+                    └──────────┬───────────┘
+                               │
+                           psycopg2
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │       Render         │
+                    │      PostgreSQL      │
+                    │    url_handler       │
+                    └──────────────────────┘
+```
+
+---
+
+## 🔄 Application Flow
+
+### Creating a Short URL
+
+```text
+User enters URL
+       ↓
+Frontend sends POST /shorten
+       ↓
+FastAPI receives the URL
+       ↓
+Pydantic validates the URL
+       ↓
+URL is stored in PostgreSQL
+       ↓
+Database generates a unique ID
+       ↓
+ID is converted to Base62
+       ↓
+Short code is generated
+       ↓
+Short code is stored in PostgreSQL
+       ↓
+Short URL is returned to the frontend
+```
+
+### Redirecting to the Original URL
+
+```text
+User opens short URL
+       ↓
+GET /{short_code}
+       ↓
+FastAPI searches PostgreSQL
+       ↓
+Short code found?
+     /       \
+   Yes        No
+    ↓          ↓
+Redirect     404 Error
+to original
+URL
+```
+
+---
+
+## 🔌 API Endpoints
+
+### `POST /shorten`
+
+Creates a shortened URL.
+
+**Request:**
+
+```json
+{
+    "homepage": "https://www.example.com"
+}
+```
+
+**Response:**
+
+```json
+{
+    "New_URL": "https://url-shortnerpy.onrender.com/abc123"
+}
+```
+
+---
+
+### `GET /{short_code}`
+
+Redirects the user to the original URL associated with the given short code.
+
+Example:
+
+```text
+GET /abc123
+```
+
+If `abc123` exists, the user is redirected to the original URL.
+
+If the short code does not exist, the API returns an appropriate error response.
+
+---
+
+## 🗄️ Database Schema
+
+The application uses a single PostgreSQL table named `url_handler`.
+
+| Column       | Type         | Description                                      |
+| ------------ | ------------ | ------------------------------------------------ |
+| `id`         | BIGINT       | Primary key and source for short-code generation |
+| `user_URL`   | VARCHAR(255) | Original URL submitted by the user               |
+| `short_Code` | VARCHAR(255) | Generated Base62 short code                      |
+| `created_at` | TIMESTAMPTZ  | Timestamp when the URL was created               |
+
+### SQL Schema
+
+```sql
+CREATE TABLE url_handler (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY
+        (START WITH 10000000) PRIMARY KEY,
+    user_URL VARCHAR(255) NOT NULL,
+    short_Code VARCHAR(255),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+```
+
+---
+
+## 🔢 URL Shortening Logic
+
+The application uses **Base62 encoding** to convert the database-generated ID into a shorter string.
+
+The Base62 character set is:
+
+```text
+abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
+```
+
+For example:
+
+```text
+Database ID
+    ↓
+Base62 Encoding
+    ↓
+Short Code
+    ↓
+abc123
+```
+
+The generated short code is then stored alongside the original URL in PostgreSQL.
+
+---
+
+## 📁 Project Structure
+
+```text
+URL_ShortnerPY/
+│
+├── Backend/
+│   ├── Database/
+│   │   └── Database.py
+│   │
+│   ├── app.py
+│   ├── shorten_url.py
+│   └── requirements.txt
+│
+├── Frontend/
+│   ├── index.html
+│   ├── script.js
+│   └── style.css
+│
+├── README.md
+├── Shortening_logic.md
+└── workflow.md
+```
+
+### Backend Files
+
+**`app.py`**
+
+Contains the FastAPI application and API endpoints.
+
+**`Database/Database.py`**
+
+Handles PostgreSQL connectivity and database operations such as:
+
+* Inserting original URLs
+* Updating short codes
+* Searching for short codes
+* Retrieving stored URLs
+
+**`shorten_url.py`**
+
+Contains the URL-shortening logic, including Base62 conversion.
+
+**`requirements.txt`**
+
+Contains the Python dependencies required by the backend.
+
+### Frontend Files
+
+**`index.html`**
+
+Contains the structure of the URL shortener interface.
+
+**`style.css`**
+
+Contains the styling for the frontend.
+
+**`script.js`**
+
+Handles user interaction and communication with the FastAPI backend using `fetch()`.
+
+---
+
+## 🔐 Environment Variables
+
+Database credentials are not hardcoded into the application.
+
+The backend uses:
+
+```text
+DATABASE_URL
+```
+
+For local development, the variable can be stored in a `.env` file.
+
+For production, the variable is configured through Render's environment variables.
+
+Example:
+
+```text
+DATABASE_URL=<your-postgresql-connection-string>
+```
+
+The `.env` file should **never be committed to GitHub**.
+
+---
+
+## 💻 Running Locally
+
+### 1. Clone the repository
+
+```bash
+git clone <repository-url>
+cd URL_ShortnerPY
+```
+
+### 2. Create and activate a virtual environment
+
+```bash
+python -m venv .venv
+```
+
+Linux/macOS:
+
+```bash
+source .venv/bin/activate
+```
+
+Windows:
+
+```bash
+.venv\Scripts\activate
+```
+
+### 3. Install dependencies
+
+```bash
+pip install -r Backend/requirements.txt
+```
+
+### 4. Configure environment variables
+
+Create a `.env` file:
+
+```text
+DATABASE_URL=postgresql://username:password@localhost:5432/database
+```
+
+### 5. Start the FastAPI server
+
+From the project root:
+
+```bash
+uvicorn Backend.app:app --reload
+```
+
+The API will be available at:
+
+```text
+http://127.0.0.1:8000
+```
+
+Swagger documentation:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+---
+
+## ☁️ Deployment
+
+The project is deployed using separate services:
+
+```text
+Frontend → Vercel
+Backend  → Render
+Database → Render PostgreSQL
+```
+
+### Frontend
+
+The HTML, CSS, and JavaScript frontend is deployed on Vercel.
+
+### Backend
+
+The FastAPI application is deployed as a Render Web Service.
+
+### Database
+
+The PostgreSQL database is hosted using Render PostgreSQL.
+
+The backend connects to the production database using the `DATABASE_URL` environment variable.
+
+---
+
+## 📋 Functional Requirements
+
+| Requirement                             | Status |
+| --------------------------------------- | ------ |
+| Accept URL input from the user          | ✅      |
+| Validate the URL                        | ✅      |
+| Generate a unique shortened URL         | ✅      |
+| Store the URL in a database             | ✅      |
+| Return the shortened URL                | ✅      |
+| Redirect to the original URL            | ✅      |
+| Handle invalid/non-existent short codes | ✅      |
+| Delete shortened URLs                   | 🚧     |
+
+---
+
+## 📋 Non-Functional Requirements
+
+* Generated short codes should not conflict with existing codes.
+* Appropriate HTTP status codes should be returned.
+* URLs must be validated before processing.
+* Database operations are separated from URL-shortening logic.
+* Database credentials are stored using environment variables.
+* Backend and frontend are deployed independently.
+
+---
+
+## 🎯 Future Improvements
+
+Some features that can be added in future versions:
+
+* [ ] Delete shortened URLs
+* [ ] Custom short codes
+* [ ] URL expiration
+* [ ] Click/visit analytics
+* [ ] Rate limiting
+* [ ] User authentication
+* [ ] User-specific URL management
+* [ ] Improved error handling
+* [ ] Automated database migrations
+* [ ] Unit and integration tests
+
+---
+
+## 📚 Project Documentation
+
+Additional project documentation:
+
+* `Shortening_logic.md` — Explanation of the Base62 shortening algorithm
+* `workflow.md` — Development and application workflow
+
+---
+
+## 👨‍💻 Author
+
+**Amish Mathur**
+
+Built as a backend-focused project to understand REST APIs, FastAPI, PostgreSQL, database interaction, URL shortening algorithms, and full-stack deployment.
