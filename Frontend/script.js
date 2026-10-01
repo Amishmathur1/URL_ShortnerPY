@@ -26,7 +26,7 @@ const form = document.getElementById("url-form");
 form.addEventListener("submit", async (event) => {
 event.preventDefault();
 
-const response = await fetch("http://127.0.0.1:8000/shorten", {
+const response = await fetch("https://url-shortnerpy.onrender.com/shorten", {
     method: "POST",
     headers: {
         "Content-Type": "application/json"
